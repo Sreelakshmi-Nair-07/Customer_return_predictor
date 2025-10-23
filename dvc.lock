@@ -9,8 +9,8 @@ stages:
       size: 6965414
     - path: params.yaml
       hash: md5
-      md5: 22203ce5b2c5f5f017e6a8cc834d6c7c
-      size: 2522
+      md5: 6975c1e6ed652551d05ad65a16f775bc
+      size: 2516
     - path: src/preprocess.py
       hash: md5
       md5: efc87e3f980fa2b50a889aada7e16cc1
@@ -33,8 +33,8 @@ stages:
       size: 16976354
     - path: params.yaml
       hash: md5
-      md5: 22203ce5b2c5f5f017e6a8cc834d6c7c
-      size: 2522
+      md5: 6975c1e6ed652551d05ad65a16f775bc
+      size: 2516
     - path: src/train.py
       hash: md5
       md5: b8685fb926db0278c179e8845540bfe8
@@ -42,8 +42,8 @@ stages:
     outs:
     - path: models/model.pkl
       hash: md5
-      md5: 741e9c610f66128cf2cfa2b4a6b579e5
-      size: 1263
+      md5: f9c70498336986c14678a8672d288883
+      size: 35248921
   test:
     cmd: python src/test.py
     deps:
@@ -53,12 +53,12 @@ stages:
       size: 2371208
     - path: models/model.pkl
       hash: md5
-      md5: 741e9c610f66128cf2cfa2b4a6b579e5
-      size: 1263
+      md5: 820d7bef121bf9a65360cba2276ba41c
+      size: 35249177
     - path: params.yaml
       hash: md5
-      md5: 22203ce5b2c5f5f017e6a8cc834d6c7c
-      size: 2522
+      md5: 6975c1e6ed652551d05ad65a16f775bc
+      size: 2516
     - path: src/test.py
       hash: md5
       md5: 4b02a7f02859d0bb396d91e9ee1203c9
@@ -66,12 +66,12 @@ stages:
     outs:
     - path: experiments/results.json
       hash: md5
-      md5: 409f30683efc0f1c59c96ec818973503
-      size: 235
+      md5: d119a4c6dc8c349b75f1acc3a5365bc6
+      size: 231
     - path: metrics.json
       hash: md5
-      md5: 8fbfa16cc59458a7c24d17c2e3abe8ed
-      size: 178
+      md5: 9695393a5610f80cdccf92977b28e325
+      size: 180
   eda:
     cmd: python src/eda.py
     deps:
@@ -81,16 +81,16 @@ stages:
       size: 2371208
     - path: models/model.pkl
       hash: md5
-      md5: 741e9c610f66128cf2cfa2b4a6b579e5
-      size: 1263
+      md5: 820d7bef121bf9a65360cba2276ba41c
+      size: 35249177
     - path: models/preprocessor.pkl
       hash: md5
       md5: c4f942d6f33f2f744295bb90812d0020
       size: 3925
     - path: params.yaml
       hash: md5
-      md5: 22203ce5b2c5f5f017e6a8cc834d6c7c
-      size: 2522
+      md5: 6975c1e6ed652551d05ad65a16f775bc
+      size: 2516
     - path: src/eda.py
       hash: md5
       md5: df30c785e2a7fe06e400f50b012cdc82
@@ -98,6 +98,6 @@ stages:
     outs:
     - path: reports
       hash: md5
-      md5: 40e533346ea11eea8fc96bc7fe0e4f72.dir
-      size: 361574
+      md5: 5cd7bf79f307475d5355d4770d9716a6.dir
+      size: 358392
       nfiles: 11

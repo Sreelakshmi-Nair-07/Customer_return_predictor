@@ -25,7 +25,7 @@ imbalance:
     n_estimators: 10
 
 model:
-  type: logistic_regression   # options: logistic_regression, random_forest, xgboost
+  type: random_forest   # options: logistic_regression, random_forest, xgboost
   logistic_regression:
     params:
       max_iter: 2000
