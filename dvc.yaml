@@ -1,0 +1,50 @@
+stages:
+  preprocess:
+    cmd: python src/preprocess.py
+    deps:
+      - src/preprocess.py
+      - data/online_sales_dataset.csv
+      - params.yaml
+    outs:
+      - data/processed/train.csv
+      - data/processed/test.csv
+
+  train:
+    cmd: python src/train.py
+    deps:
+      - data/processed/train.csv
+      - src/train.py
+      - params.yaml
+    outs:
+      - models/model.pkl
+
+  test:
+    cmd: python src/test.py
+    deps:
+      - models/model.pkl
+      - data/processed/test.csv
+      - src/test.py
+      - params.yaml
+    outs:
+      - experiments/results.json:
+          persist: true
+    metrics:
+      - metrics.json
+
+  eda:
+    cmd: python src/eda.py
+    deps:
+      - src/eda.py
+      - models/model.pkl
+      - models/preprocessor.pkl
+      - data/processed/test.csv
+      - params.yaml
+    outs:
+      - reports:
+          persist: true
+
+plots:
+  - experiments/results.json:
+      x: model
+      y: accuracy
+      title: "Model Accuracy Comparison"

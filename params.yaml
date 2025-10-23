@@ -1,0 +1,96 @@
+dataset:
+  source: csv
+  raw_csv_path: data\online_sales_dataset.csv
+  target_col: ReturnStatus
+
+split:
+  test_size: 0.2
+  random_state: 42
+  stratify: true
+
+preprocess:
+  replace_missing_as_nan: true
+  numeric_imputer: median
+  categorical_imputer: most_frequent
+  scale_numeric: true
+  one_hot_encode: true
+  drop_first: true
+  save_preprocessor: true
+  use_smote: true  # Set to true to apply SMOTE for class imbalance
+
+imbalance:
+  # options: auto, none, smote, class_weight, scale_pos_weight, balanced_bagging
+  strategy: balanced
+  balanced_bagging:
+    n_estimators: 10
+
+model:
+  type: logistic_regression   # options: logistic_regression, random_forest, xgboost
+  logistic_regression:
+    params:
+      max_iter: 2000
+      solver: lbfgs
+  random_forest:
+    params:
+      n_estimators: 500
+      max_depth: 15
+      min_samples_split: 20
+      min_samples_leaf: 5
+      n_jobs: -1
+    cv:
+      enable: true        # set true to run hyperparameter search for this model
+      method: randomized   # options: randomized, grid
+      n_iter: 30           # used for randomized search
+      cv_folds: 5
+      scoring: f1
+      param_distributions:
+        n_estimators: [100, 200, 300, 500,600,800,1000]
+        max_depth: [4, 8, 12, 16]
+        min_samples_split: [2, 5, 10, 20]
+        min_samples_leaf: [1, 2, 4, 6]
+  xgboost:
+    params:
+      n_estimators: 1000
+      learning_rate: 0.02
+      max_depth: 4
+      subsample: 0.9
+      colsample_bytree: 0.9
+    cv:
+      enable: false
+      method: randomized
+      n_iter: 40
+      cv_folds: 5
+      scoring: f1
+      early_stopping_rounds: 50
+      param_distributions:
+        n_estimators: [100, 200, 500, 1000]
+        learning_rate: [0.005, 0.01, 0.02, 0.05]
+        max_depth: [3, 4, 6, 8]
+        subsample: [0.6, 0.8, 0.9, 1.0]
+        colsample_bytree: [0.6, 0.8, 0.9, 1.0]
+        gamma: [0, 1, 5]
+        reg_alpha: [0, 1e-3, 1e-2, 0.1]
+        reg_lambda: [1, 1.5, 2.0]
+      
+test:
+  metrics:
+    average: binary
+    pos_label: Returned
+    include:
+      - accuracy
+      - precision
+      - recall
+      - f1
+      - roc_auc
+
+paths:
+  raw: data/online_sales_dataset.csv
+  processed_train: data/processed/train.csv
+  processed_test: data/processed/test.csv
+  model: models/model.pkl
+  preprocessor: models/preprocessor.pkl
+  results: experiments/results.json
+
+eda:
+  run_on_dvc: true   # if true, dvc repro will run the eda stage
+  output_dir: reports
