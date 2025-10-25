@@ -95,9 +95,4 @@ stages:
       hash: md5
       md5: df30c785e2a7fe06e400f50b012cdc82
       size: 44706
-    outs:
-    - path: reports
-      hash: md5
-      md5: 5cd7bf79f307475d5355d4770d9716a6.dir
-      size: 358392
-      nfiles: 11
+
