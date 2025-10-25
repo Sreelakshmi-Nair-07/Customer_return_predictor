@@ -97,41 +97,8 @@ def plot_numeric_corr(df, figs, max_features=40):
     print("Saved:", out)
 
 
-def plot_category_return_rates(df, category_col_candidates, target_col, figs, top_n=10):
-    for col in category_col_candidates:
-        if col in df.columns:
-            ynum = _coerce_target_to_numeric(df, target_col)
-            if ynum is None:
-                print(f"Skipping return-rate plot for {col}: cannot coerce target '{target_col}' to numeric in this dataframe")
-                continue
-            grp = df.assign(_y=ynum).groupby(col)['_y'].agg(['mean', 'count']).sort_values('count', ascending=False).head(top_n)
-            plt.figure(figsize=(8, 4))
-            sns.barplot(x=grp.index.astype(str), y=grp['mean'])
-            plt.xticks(rotation=45, ha='right')
-            plt.ylabel(f"{target_col} rate")
-            plt.title(f"Return rate by {col} (top {top_n} levels)")
-            plt.tight_layout()
-            out = figs / f"return_rate_by_{col}.png"
-            plt.savefig(out)
-            plt.close()
-            print("Saved:", out)
 
 
-def plot_price_distributions(df, price_cols, target_col, figs):
-    for pc in price_cols:
-        if pc in df.columns:
-            ynum = _coerce_target_to_numeric(df, target_col)
-            plt.figure(figsize=(8, 4))
-            if ynum is not None:
-                sns.kdeplot(data=df.assign(_y=ynum), x=pc, hue='_y', common_norm=False)
-            else:
-                sns.kdeplot(data=df, x=pc)
-            plt.title(f"Distribution of {pc} by {target_col}")
-            plt.tight_layout()
-            out = figs / f"price_dist_{pc}.png"
-            plt.savefig(out)
-            plt.close()
-            print("Saved:", out)
 
 
 def plot_seasonality(df, date_col_candidates, target_col, figs):
@@ -160,127 +127,6 @@ def plot_seasonality(df, date_col_candidates, target_col, figs):
                 print("Seasonality plot failed for column", dc, e)
 
 
-def plot_country_return_rates(df, country_col_candidates, target_col, figs, top_n=20):
-    for col in country_col_candidates:
-        if col in df.columns:
-            ynum = _coerce_target_to_numeric(df, target_col)
-            if ynum is None:
-                print(f"Skipping country-return plot for {col}: cannot coerce target '{target_col}' to numeric in this dataframe")
-                continue
-            grp = df.assign(_y=ynum).groupby(col)['_y'].agg(['mean', 'count']).sort_values('count', ascending=False).head(top_n)
-            plt.figure(figsize=(10, 5))
-            sns.barplot(x=grp.index.astype(str), y=grp['mean'])
-            plt.xticks(rotation=45, ha='right')
-            plt.ylabel(f"{target_col} rate")
-            plt.title(f"Return rate by {col} (top {top_n})")
-            plt.tight_layout()
-            out = figs / f"return_rate_by_{col}.png"
-            plt.savefig(out)
-            plt.close()
-            print("Saved:", out)
-
-
-def plot_warehouse_performance(df, warehouse_col, target_col, figs):
-    if warehouse_col in df.columns:
-        ynum = _coerce_target_to_numeric(df, target_col)
-        if ynum is None:
-            print(f"Skipping warehouse plot: cannot coerce target '{target_col}' to numeric")
-            return
-        grp = df.assign(_y=ynum).groupby(warehouse_col)['_y'].agg(['mean', 'count']).sort_values('count', ascending=False)
-        plt.figure(figsize=(10, 5))
-        sns.barplot(x=grp.index.astype(str), y=grp['mean'])
-        plt.xticks(rotation=45, ha='right')
-        plt.ylabel('Return rate')
-        plt.title('Return percentage by warehouse')
-        out = figs / f'return_by_{warehouse_col}.png'
-        plt.tight_layout()
-        plt.savefig(out)
-        plt.close()
-        print('Saved:', out)
-
-
-def plot_payment_method(df, payment_col, target_col, figs):
-    if payment_col in df.columns:
-        ynum = _coerce_target_to_numeric(df, target_col)
-        if ynum is None:
-            print(f"Skipping payment method plot: cannot coerce target '{target_col}' to numeric")
-            return
-        grp = df.assign(_y=ynum).groupby(payment_col)['_y'].agg(['mean', 'count']).sort_values('count', ascending=False)
-        plt.figure(figsize=(8, 4))
-        sns.barplot(x=grp.index.astype(str), y=grp['mean'])
-        plt.xticks(rotation=45, ha='right')
-        plt.ylabel('Return rate')
-        plt.title('Return rate by payment method')
-        out = figs / 'return_by_payment_method.png'
-        plt.tight_layout()
-        plt.savefig(out)
-        plt.close()
-        print('Saved:', out)
-
-
-def plot_shipping_cost_boxplot(df, shipping_col, target_col, figs):
-    if shipping_col in df.columns:
-        ynum = _coerce_target_to_numeric(df, target_col)
-        if ynum is None:
-            print(f"Skipping shipping cost boxplot: cannot coerce target '{target_col}' to numeric")
-            return
-        dfb = df[[shipping_col]].copy()
-        dfb['_y'] = ynum
-        dfb = dfb.dropna()
-        plt.figure(figsize=(8, 6))
-        sns.boxplot(x='_y', y=shipping_col, data=dfb)
-        plt.xticks([0,1], ['Not Returned','Returned'])
-        plt.ylabel('Shipping cost')
-        plt.title('Shipping cost by return status')
-        out = figs / 'shipping_cost_by_return_boxplot.png'
-        plt.tight_layout()
-        plt.savefig(out)
-        plt.close()
-        print('Saved:', out)
-
-
-def plot_order_priority(df, priority_col, target_col, figs):
-    if priority_col in df.columns:
-        ynum = _coerce_target_to_numeric(df, target_col)
-        if ynum is None:
-            print(f"Skipping order priority plot: cannot coerce target '{target_col}' to numeric")
-            return
-        dfb = df[[priority_col]].copy()
-        dfb['_y'] = ynum
-        dfb = dfb.dropna()
-        plt.figure(figsize=(8, 6))
-        sns.violinplot(x=priority_col, y='_y', data=dfb)
-        plt.ylabel('Return probability')
-        plt.title('Order priority vs return behavior')
-        out = figs / 'order_priority_vs_return_violin.png'
-        plt.tight_layout()
-        plt.savefig(out)
-        plt.close()
-        print('Saved:', out)
-
-
-def plot_quantity_price_scatter(df, qty_col, price_col, target_col, figs):
-    if qty_col in df.columns and price_col in df.columns:
-        ynum = _coerce_target_to_numeric(df, target_col)
-        dfb = df[[qty_col, price_col]].copy()
-        if ynum is not None:
-            dfb['_y'] = ynum
-        dfb = dfb.dropna()
-        plt.figure(figsize=(8, 6))
-        if '_y' in dfb.columns:
-            sns.scatterplot(x=price_col, y=qty_col, hue='_y', data=dfb, palette='coolwarm', alpha=0.6)
-        else:
-            sns.scatterplot(x=price_col, y=qty_col, data=dfb, alpha=0.6)
-        plt.xlabel('Unit Price')
-        plt.ylabel('Quantity')
-        plt.title('Quantity vs Unit Price colored by ReturnStatus')
-        out = figs / 'quantity_vs_unitprice_scatter.png'
-        plt.tight_layout()
-        plt.savefig(out)
-        plt.close()
-        print('Saved:', out)
-
-
 def plot_precision_recall_curve(y, probs, figs):
     try:
         from sklearn.metrics import precision_recall_curve, average_precision_score
@@ -300,97 +146,6 @@ def plot_precision_recall_curve(y, probs, figs):
     except Exception as e:
         print('Precision-Recall plot failed:', e)
 
-
-def plot_feature_importance(model, X, figs, preprocessor_path=None, raw_df=None):
-    """Plot feature importance using built-in model attributes and permutation importance"""
-    # Try to set descriptive column names if X currently has numeric/unnamed columns
-    try:
-        if isinstance(X, pd.DataFrame):
-            cols = list(X.columns)
-            numeric_like = all(str(c).isdigit() or str(c).startswith('Unnamed') or str(c).strip()=='' for c in cols)
-            if numeric_like and preprocessor_path is not None and Path(preprocessor_path).exists():
-                try:
-                    pre = joblib.load(preprocessor_path)
-                    if hasattr(pre, 'get_feature_names_out') and raw_df is not None:
-                        try:
-                            feature_names = pre.get_feature_names_out(raw_df.columns)
-                            if len(feature_names) == X.shape[1]:
-                                X.columns = feature_names
-                                print('Replaced numeric column names with descriptive feature names from preprocessor')
-                        except Exception:
-                            pass
-                except Exception:
-                    pass
-    except Exception:
-        pass
-
-    # Try built-in feature importance methods first
-    try:
-        if hasattr(model, 'feature_importances_'):
-            fi = pd.Series(model.feature_importances_, index=X.columns).sort_values(ascending=False).head(30)
-            plt.figure(figsize=(12, 6))
-            sns.barplot(x=fi.values, y=fi.index)
-            plt.title('Feature Importance (from model.feature_importances_)')
-            plt.xlabel('Importance')
-            plt.tight_layout()
-            out = figs / 'feature_importances.png'
-            plt.savefig(out)
-            plt.close()
-            print('Saved feature importances to', out)
-            return
-        elif hasattr(model, 'coef_'):
-            coef = model.coef_.ravel()
-            # Get both raw coefficients for direction and absolute for magnitude
-            fi_raw = pd.Series(coef, index=X.columns)
-            fi_abs = fi_raw.abs().sort_values(ascending=False).head(30)
-            
-            # Plot both raw and absolute on same plot
-            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 8))
-            
-            # Raw coefficients (shows direction)
-            sns.barplot(x=fi_raw[fi_abs.index], y=fi_abs.index, ax=ax1)
-            ax1.set_title('Feature Effects\n(direction matters)')
-            ax1.set_xlabel('Coefficient value')
-            
-            # Absolute coefficients (shows magnitude)
-            sns.barplot(x=fi_abs.values, y=fi_abs.index, ax=ax2)
-            ax2.set_title('Feature Importance\n(absolute magnitude)')
-            ax2.set_xlabel('Absolute coefficient value')
-            
-            plt.tight_layout()
-            out = figs / 'feature_importance_coefficients.png'
-            plt.savefig(out)
-            plt.close()
-            print('Saved coefficient importances to', out)
-            return
-    except Exception as e:
-        print('Feature importance plotting failed:', e)
-
-
-def plot_discount_vs_return(df, discount_col_candidates, target_col, figs, bins=10):
-    for col in discount_col_candidates:
-        if col in df.columns:
-            try:
-                ynum = _coerce_target_to_numeric(df, target_col)
-                if ynum is None:
-                    print(f"Skipping discount plot for {col}: cannot coerce target '{target_col}' to numeric in this dataframe")
-                    continue
-                series = pd.to_numeric(df[col], errors='coerce')
-                dfb = pd.DataFrame({col: series, '_y': ynum}).dropna()
-                dfb['bin'] = pd.qcut(dfb[col], q=bins, duplicates='drop')
-                grp = dfb.groupby('bin')['_y'].mean()
-                plt.figure(figsize=(10, 4))
-                grp.plot(kind='bar')
-                plt.xticks(rotation=45, ha='right')
-                plt.ylabel('Return rate')
-                plt.title(f'Return rate by {col} (binned)')
-                plt.tight_layout()
-                out = figs / f"return_rate_by_{col}_binned.png"
-                plt.savefig(out)
-                plt.close()
-                print('Saved:', out)
-            except Exception as e:
-                print('Discount plot failed for', col, e)
 
 
 def plot_time_trends(df, date_col_candidates, target_col, figs):
@@ -475,34 +230,6 @@ def plot_risk_score_pie(probs, figs):
     except Exception as e:
         print('Risk score pie chart failed:', e)
 
-
-def plot_risk_quartile_bars(probs, figs):
-    """Bar chart counts and average risk per bucket (Low/Medium/High)"""
-    try:
-        t1, t2 = 0.33, 0.66
-        bins = [0.0, t1, t2, 1.0]
-        labels = ['Low', 'Medium', 'High']
-        cat = pd.cut(probs, bins=bins, labels=labels, include_lowest=True)
-        dfq = pd.DataFrame({'bucket': cat, 'prob': probs})
-        counts = dfq['bucket'].value_counts().reindex(labels, fill_value=0)
-        means = dfq.groupby('bucket')['prob'].mean().reindex(labels)
-
-        fig, ax1 = plt.subplots(figsize=(8, 5))
-        counts.plot(kind='bar', color='skyblue', ax=ax1)
-        ax1.set_ylabel('Count')
-        ax1.set_title('Customer counts and avg risk by bucket (Low/Medium/High)')
-
-        ax2 = ax1.twinx()
-        means.plot(kind='line', marker='o', color='red', ax=ax2)
-        ax2.set_ylabel('Average predicted risk')
-
-        out = figs / 'risk_buckets_bar.png'
-        plt.tight_layout()
-        plt.savefig(out)
-        plt.close()
-        print('Saved:', out)
-    except Exception as e:
-        print('Risk bucket bar chart failed:', e)
 
 
 def plot_roc_auc(y, probs, figs):
@@ -629,44 +356,6 @@ def plot_metrics_by_segment(df, probs, y_test, segment_cols, figs):
         except Exception as e:
             print(f'Metrics by {col} plot failed:', e)
 
-def plot_discount_sensitivity(model, preprocessor, figs, num_points=50):
-    """Plot how return probability changes with discount level"""
-    try:
-        if not hasattr(preprocessor, 'get_feature_names_out'):
-            print('Preprocessor does not support feature names, skipping discount sensitivity')
-            return
-            
-        # Create synthetic data with varying discount
-        discounts = np.linspace(0, 0.5, num_points)  # 0% to 50% discount
-        
-        # Create a base sample with median/mode values
-        base_sample = pd.DataFrame({
-            'Discount': discounts,
-            'Category': ['Electronics'] * num_points,  # example category
-            'PaymentMethod': ['Credit Card'] * num_points,  # example payment
-            'ShippingCost': [10] * num_points,  # example shipping cost
-            'Quantity': [1] * num_points  # example quantity
-        })
-        
-        # Transform data and get predictions
-        X_proc = preprocessor.transform(base_sample)
-        probs = model.predict_proba(X_proc)[:, 1]
-        
-        plt.figure(figsize=(10, 6))
-        plt.plot(discounts * 100, probs, 'b-', linewidth=2)
-        plt.xlabel('Discount Percentage')
-        plt.ylabel('Predicted Return Probability')
-        plt.title('Return Probability vs. Discount Level')
-        plt.grid(True)
-        
-        out = figs / 'discount_sensitivity.png'
-        plt.tight_layout()
-        plt.savefig(out)
-        plt.close()
-        print('Saved:', out)
-        
-    except Exception as e:
-        print('Discount sensitivity plot failed:', e)
 
 def plot_sales_channel_reliability(df, probs, y_test, channel_col, figs):
     """Create sales channel reliability index visualization"""
@@ -1064,16 +753,14 @@ def main():
     # Now create the requested plots
     if probs is not None:
         plot_risk_score_pie(probs, figs)
-        plot_risk_quartile_bars(probs, figs)
+        
 
         # Metrics by segment (requires raw_df and y_test)
         if raw_df is not None and y_test is not None and len(y_test) == len(probs):
             segment_cols = ['Category', 'Country', 'SalesChannel']
             plot_metrics_by_segment(raw_df.reset_index(drop=True).iloc[:len(probs)], probs, y_test, segment_cols, figs)
 
-        # Discount sensitivity
-        if preprocessor is not None:
-            plot_discount_sensitivity(model, preprocessor, figs)
+    
 
         # ROC and PR
         if y_test is not None and len(y_test) == len(probs):

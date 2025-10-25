@@ -39,12 +39,4 @@ stages:
       - models/preprocessor.pkl
       - data/processed/test.csv
       - params.yaml
-    outs:
-      - reports:
-          persist: true
 
-plots:
-  - experiments/results.json:
-      x: model
-      y: accuracy
-      title: "Model Accuracy Comparison"
